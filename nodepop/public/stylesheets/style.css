@@ -6,3 +6,24 @@ body {
 a {
   color: #00B7FF;
 }
+
+.picture {
+  max-height: 80px;
+  max-width: 80px;
+  width: 100%;
+}
+
+.imageContainer{
+  width: 250px;
+  padding-right: 3%;
+}
+
+.listadoContainer{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+p{
+  display: block;
+}
