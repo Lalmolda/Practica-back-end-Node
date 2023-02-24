@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 // Defining Anuncio schema
 const anuncioSchema = new mongoose.Schema(
     { nombre: String,  
-    estado: String, //se vende o se busca
+    venta: Boolean, //se vende true.
     precio: Number,
     foto: String,
     tag: Array,
@@ -13,14 +13,12 @@ const anuncioSchema = new mongoose.Schema(
 
 //Static method anuncio
 
-anuncioSchema.statics.lista = function(filtro, precio, skip, limit, sort) {
-    console.log("ANTES DE EJECUTAR PRECIO VALE "+precio);
+anuncioSchema.statics.lista = function(filtro, skip, limit, sort, select) {
     const query = anuncio.find(filtro); // thenables
-    //const query = anuncio.find(precio);
-    query.find(precio);
     query.skip(skip);
     query.limit(limit);
     query.sort(sort);
+    query.select(select)
     return query.exec();
   }
 

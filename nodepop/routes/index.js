@@ -6,18 +6,20 @@ const apiAnuncio = require('../routes/api/anuncios');
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   
+/*
+Query propuesta de selección para probar index:
+
+http://localhost:3001/?pminimo=190&pmaximo=2000&tag=lifestyle&venta=true&sort=-precio&limit=15
+
+*/
+
   try {
     res.locals.title="Práctica Back-end";
-    res.locals.prueba="PRUEBA";
-    //res.send("RESPONDO");
-    
-
-
     // filtros
     const filterByName = req.query.nombre;
-    const filterByStatus = req.query.estado;
-    const filterByMinPrice = req.query.pMinimo;
-    const filterByMaxPrice = req.query.pMaximo;
+    const filterByStatus = req.query.venta;
+    const filterByMinPrice = req.query.pminimo;
+    const filterByMaxPrice = req.query.pmaximo;
     const filterPrecio = req.query.precio;
     const filterByTag = req.query.tag;
     // paginación
@@ -27,23 +29,44 @@ router.get('/', async function(req, res, next) {
     const sort = req.query.sort;
     // selección de campos
     const select = req.query.select;
-
+    console.log("SELECT ES "+select)
     const filtro = {};
-    var precio = {};
+
+    //Dejo el código de mi intento de crear un objeto de objetos
+    //para meter la expresión regular como también funciona
+    //en la consola de MongoDB, resulta que no lo coge por las comillas
+    //y al crear los objetos sus propiedades me las mete automáticamente
+    //con comillas no se por qué... La query funciona en consola
+    // Query intentada: b.anuncios.find({nombre: {"$regex": /^fer/, $options: 'i'}})
     if(filterByName){
-      filtro.nombre=filterByName;
+      //filterByName+="/";
+      //let regEx="/^";
+      //regEx+=filterByName;
+      //let nameSearch = {};
+      //nameSearch = {"$regex": regEx};
+      //const optionRegEx = {"$options": 'i'}
+      //Object.assign(nameSearch,optionRegEx);
+      //const prueba = { "$regex": /^F/};
+      //Object.assign(filtro.nombre,nameSearch);
+      filtro.nombre = new RegExp('^'+filterByName, "i");
+      console.log("FILTRO DE NOMBRE ES: "+filtro.nombre);
     }
 
     if(filterByStatus){
-      filtro.estado=filterByStatus;
+      filtro.venta=filterByStatus;
     }
     
     if(filterByTag){
       filtro.tag=filterByTag;
     }
 
-//QUERY A HACER: db.anuncios.find({"precio":{"$gt": 47, "$lt": 2000}})
-
+    /*Si detecta que se ha pasado un precio mínimo
+    y detecta que filtro.precio ha sido ya inicializado,
+    lo asigna a filtro.precio con Object.assign, ya que
+    si filtro.precio ha sido inicializado significa que ya hay un
+    objecto de precio máximo dentro y hay que hacer merge con Object.assign.
+    En caso contrario, simplemente asigna el objeto a filtro.precio, inicializándolo.
+    */
     if(filterByMinPrice){
       const min = { "$gte": filterByMinPrice };
       if(filtro.precio){
@@ -54,10 +77,8 @@ router.get('/', async function(req, res, next) {
       
     }
     
-    //console.log("SOY PRECIO SIN JODER "+filtro.precio);
-
+    /*Equivalente a precio mínimo*/
     if(filterByMaxPrice){
-      console.log("ENTRO A MAX PRICE CON VALOR "+filterByMaxPrice)
       const max = { "$lte": filterByMaxPrice };
       if(filtro.precio){
         Object.assign(filtro.precio,max);
@@ -66,24 +87,14 @@ router.get('/', async function(req, res, next) {
       }
     }
 
-    
-    //console.log("SOY PRECIO1 "+  Object.keys(filtro.precio));
-    //console.log("SOY PRECIO2 "+  filtro.precio[Object.keys(filtro.precio)]);
-    /*for(let i in filtro.precio){
-      console.log("LENGTH DEL OBJETO nuevo ES "+filtro.precio[i])
-    }*/
-
    if(filterPrecio){
-    console.log("LLEGO A NUEVO FILTRO "+filterPrecio);
     precio = {"precio": filterPrecio};
     console.log(precio);
    }
   
-
-    //const anuncios = await anuncio.find(filtro.name);
-    res.locals.anuncio = await anuncio.lista(filtro, precio, skip, limit, sort, select);
-    //res.locals.anuncio= await anuncio.find();
+    res.locals.anuncio = await anuncio.lista(filtro, skip, limit, sort, select);
     res.render('index');
+    //res.json(res.locals.anuncio);
 
   }catch (error) {
     next(error);

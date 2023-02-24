@@ -23,17 +23,16 @@ async function initAnuncios() {
 
   // crear anuncios iniciales
   var countInserted = 0;
-  const regs=2;
+  const regs=10;
   for(let i=0;i<regs;i++){
   const inserted = await anuncio.insertMany([
-    { nombre: 'Balon', estado: 'venta', precio: 48.3, foto:'images/balon.jpg', tag: 'work'},
-    { nombre: 'Sofa', estado: 'busqueda', precio: 199.99, foto:'images/sofa.jpg', tag: 'lifestyle'},
-    { nombre: 'Iphone', estado: 'venta', precio: 1199.99, foto:'images/iphone.jpg', tag: 'mobile'},
-    { nombre: 'Ferrari', estado: 'busqueda', precio: 234000, foto:'images/ferrari.jpg', tag: ['motor','lifestyle']},
+    { nombre: 'Balon', venta: true, precio: 48.3, foto:'images/balon.jpg', tag: 'work'},
+    { nombre: 'Sofa', venta: true, precio: 199.99, foto:'images/sofa.jpg', tag: 'lifestyle'},
+    { nombre: 'Iphone', venta: true, precio: 1199.99, foto:'images/iphone.jpg', tag: ['mobile','lifestyle']},
+    { nombre: 'Ferrari', venta: false, precio: 234000, foto:'images/ferrari.jpg', tag: ['motor','lifestyle']},
   ]);
-  countInserted++
+  countInserted++;
   }
-  countInserted=countInserted*regs;
-  //console.log(`Creados ${inserted.length} anuncios`);
-  console.log("Creados "+(countInserted*2)+" anuncios");
+  countInserted=countInserted*4;
+  console.log("Creados "+(countInserted)+" anuncios");
 }
